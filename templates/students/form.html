@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{{ 'New' if mode == 'create' else 'Edit' }} Student{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-2 gap-md-0 mb-4 page-header-wrap">
+  <div>
+    <h1 class="h3 mb-1 fw-bold">{{ 'New student' if mode == 'create' else 'Edit student' }}</h1>
+    <p class="text-muted small mb-0">Students can optionally belong to a class.</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="{{ url_for('students_list') }}"><i class="bi bi-arrow-left me-1"></i> Back</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-4">
+    <form method="post" class="needs-validation" novalidate>
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label" for="student-first">First name <span class="text-danger">*</span></label>
+          <input class="form-control" id="student-first" name="first_name" value="{{ student.first_name if student else '' }}" required placeholder="e.g. John" />
+          <div class="invalid-feedback">Please enter first name.</div>
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label" for="student-last">Last name <span class="text-danger">*</span></label>
+          <input class="form-control" id="student-last" name="last_name" value="{{ student.last_name if student else '' }}" required placeholder="e.g. Smith" />
+          <div class="invalid-feedback">Please enter last name.</div>
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label" for="student-email">Email</label>
+          <input class="form-control" id="student-email" type="email" name="email" value="{{ student.email if student and student.email else '' }}" placeholder="john@school.edu" />
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label" for="student-dob">Date of birth</label>
+          <input class="form-control" id="student-dob" type="date" name="date_of_birth" value="{{ student.date_of_birth if student and student.date_of_birth else '' }}" />
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label" for="student-enroll">Enrollment date</label>
+          <input class="form-control" id="student-enroll" type="date" name="enrollment_date" value="{{ student.enrollment_date if student and student.enrollment_date else '' }}" />
+        </div>
+        <div class="col-12">
+          <label class="form-label" for="student-class">Class</label>
+          <select class="form-select" id="student-class" name="class_id">
+            <option value="">— None —</option>
+            {% for c in classes %}
+            <option value="{{ c.id }}" {% if student and student.class_id == c.id %}selected{% endif %}>{{ c.name }}{% if c.teacher %} — {{ c.teacher.full_name }}{% endif %}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <hr class="my-4" />
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-info text-dark" type="submit">
+          <i class="bi bi-{{ 'plus-lg' if mode == 'create' else 'check-lg' }} me-1"></i>
+          {{ 'Create student' if mode == 'create' else 'Save changes' }}
+        </button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('students_list') }}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function() {
+    var form = document.querySelector('.needs-validation');
+    if (form) form.addEventListener('submit', function(e) {
+      if (!form.checkValidity()) { e.preventDefault(); e.stopPropagation(); }
+      form.classList.add('was-validated');
+    });
+  })();
+</script>
+{% endblock %}

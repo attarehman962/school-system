@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ 'New' if mode == 'create' else 'Edit' }} Class{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-2 gap-md-0 mb-4 page-header-wrap">
+  <div>
+    <h1 class="h3 mb-1 fw-bold">{{ 'New class' if mode == 'create' else 'Edit class' }}</h1>
+    <p class="text-muted small mb-0">Classes can have a teacher and many students.</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="{{ url_for('classes_list') }}"><i class="bi bi-arrow-left me-1"></i> Back</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-4">
+    <form method="post" class="needs-validation" novalidate>
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label" for="class-name">Class name <span class="text-danger">*</span></label>
+          <input class="form-control" id="class-name" name="name" value="{{ class_.name if class_ else '' }}" required placeholder="e.g. Math 101" />
+          <div class="invalid-feedback">Please enter class name.</div>
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label" for="class-grade">Grade level</label>
+          <input class="form-control" id="class-grade" name="grade_level" value="{{ class_.grade_level if class_ else '' }}" placeholder="e.g. 10" />
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label" for="class-room">Room</label>
+          <input class="form-control" id="class-room" name="room" value="{{ class_.room if class_ else '' }}" placeholder="e.g. B12" />
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label" for="class-year">School year</label>
+          <input class="form-control" id="class-year" name="school_year" value="{{ class_.school_year if class_ else '' }}" placeholder="e.g. 2025/2026" />
+        </div>
+        <div class="col-12 col-md-8">
+          <label class="form-label" for="class-teacher">Teacher</label>
+          <select class="form-select" id="class-teacher" name="teacher_id">
+            <option value="">— None —</option>
+            {% for t in teachers %}
+            <option value="{{ t.id }}" {% if class_ and class_.teacher_id == t.id %}selected{% endif %}>{{ t.full_name }} ({{ t.email }})</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <hr class="my-4" />
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-success" type="submit">
+          <i class="bi bi-{{ 'plus-lg' if mode == 'create' else 'check-lg' }} me-1"></i>
+          {{ 'Create class' if mode == 'create' else 'Save changes' }}
+        </button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('classes_list') }}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function() {
+    var form = document.querySelector('.needs-validation');
+    if (form) form.addEventListener('submit', function(e) {
+      if (!form.checkValidity()) { e.preventDefault(); e.stopPropagation(); }
+      form.classList.add('was-validated');
+    });
+  })();
+</script>
+{% endblock %}

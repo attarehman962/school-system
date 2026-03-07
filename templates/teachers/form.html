@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ 'New' if mode == 'create' else 'Edit' }} Teacher{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-2 gap-md-0 mb-4 page-header-wrap">
+  <div>
+    <h1 class="h3 mb-1 fw-bold">{{ 'New teacher' if mode == 'create' else 'Edit teacher' }}</h1>
+    <p class="text-muted small mb-0">Teachers can be assigned to classes.</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="{{ url_for('teachers_list') }}"><i class="bi bi-arrow-left me-1"></i> Back</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-4">
+    <form method="post" class="needs-validation" novalidate>
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label" for="teacher-first">First name <span class="text-danger">*</span></label>
+          <input class="form-control" id="teacher-first" name="first_name" value="{{ teacher.first_name if teacher else '' }}" required placeholder="e.g. Jane" />
+          <div class="invalid-feedback">Please enter first name.</div>
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label" for="teacher-last">Last name <span class="text-danger">*</span></label>
+          <input class="form-control" id="teacher-last" name="last_name" value="{{ teacher.last_name if teacher else '' }}" required placeholder="e.g. Doe" />
+          <div class="invalid-feedback">Please enter last name.</div>
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label" for="teacher-email">Email <span class="text-danger">*</span></label>
+          <input class="form-control" id="teacher-email" type="email" name="email" value="{{ teacher.email if teacher else '' }}" required placeholder="jane@school.edu" />
+          <div class="invalid-feedback">Please enter a valid email.</div>
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label" for="teacher-phone">Phone</label>
+          <input class="form-control" id="teacher-phone" name="phone" value="{{ teacher.phone if teacher else '' }}" placeholder="+1 234 567 8900" />
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label" for="teacher-hire">Hire date</label>
+          <input class="form-control" id="teacher-hire" type="date" name="hire_date" value="{{ teacher.hire_date if teacher and teacher.hire_date else '' }}" />
+        </div>
+      </div>
+      <hr class="my-4" />
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-primary" type="submit">
+          <i class="bi bi-{{ 'plus-lg' if mode == 'create' else 'check-lg' }} me-1"></i>
+          {{ 'Create teacher' if mode == 'create' else 'Save changes' }}
+        </button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('teachers_list') }}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function() {
+    var form = document.querySelector('.needs-validation');
+    if (form) form.addEventListener('submit', function(e) {
+      if (!form.checkValidity()) { e.preventDefault(); e.stopPropagation(); }
+      form.classList.add('was-validated');
+    });
+  })();
+</script>
+{% endblock %}

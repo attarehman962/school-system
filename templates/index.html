@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}School System – LAPP CRUD{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12">
+    <div class="p-4 p-md-5 mb-4 rounded-3 bg-white border-0 shadow-sm">
+      <h1 class="display-6 fw-bold mb-2">School System</h1>
+      <p class="text-muted mb-0 lead">
+        CRUD application using the LAPP stack: Linux, Apache (mod_wsgi), PostgreSQL, and Python (Flask).
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-sm-6 col-lg-4">
+    <a href="/teachers" class="text-decoration-none text-dark">
+      <div class="card h-100 interactive border-0 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex align-items-center mb-3">
+            <span class="rounded-3 bg-primary bg-opacity-10 p-3 me-3">
+              <i class="bi bi-person-badge text-primary fs-4"></i>
+            </span>
+            <h2 class="h5 mb-0 fw-bold">Teachers</h2>
+          </div>
+          <p class="card-text text-muted flex-grow-1 small mb-3">Manage teachers: name, email, phone, hire date.</p>
+          <span class="btn btn-primary btn-sm align-self-start">Open <i class="bi bi-arrow-right ms-1"></i></span>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-lg-4">
+    <a href="/classes" class="text-decoration-none text-dark">
+      <div class="card h-100 interactive border-0 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex align-items-center mb-3">
+            <span class="rounded-3 bg-success bg-opacity-10 p-3 me-3">
+              <i class="bi bi-journal-text text-success fs-4"></i>
+            </span>
+            <h2 class="h5 mb-0 fw-bold">Classes</h2>
+          </div>
+          <p class="card-text text-muted flex-grow-1 small mb-3">Manage classes and assign a teacher.</p>
+          <span class="btn btn-success btn-sm align-self-start">Open <i class="bi bi-arrow-right ms-1"></i></span>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-lg-4">
+    <a href="/students" class="text-decoration-none text-dark">
+      <div class="card h-100 interactive border-0 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex align-items-center mb-3">
+            <span class="rounded-3 bg-info bg-opacity-10 p-3 me-3">
+              <i class="bi bi-people text-info fs-4"></i>
+            </span>
+            <h2 class="h5 mb-0 fw-bold">Students</h2>
+          </div>
+          <p class="card-text text-muted flex-grow-1 small mb-3">Manage students and assign them to a class.</p>
+          <span class="btn btn-info btn-sm align-self-start text-dark">Open <i class="bi bi-arrow-right ms-1"></i></span>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<hr class="my-4" />
+
+<div class="d-flex flex-column flex-md-row gap-2 align-items-md-center">
+  <form method="post" action="/init-db" class="d-flex align-items-center gap-2">
+    <button class="btn btn-outline-secondary" type="submit">
+      <i class="bi bi-database-add me-1"></i> Create DB tables
+    </button>
+  </form>
+  <span class="text-muted small">Runs <code>db.create_all()</code> for first-time setup.</span>
+</div>
+{% endblock %}
