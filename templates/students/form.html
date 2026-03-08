@@ -30,7 +30,8 @@
         </div>
         <div class="col-6 col-md-3">
           <label class="form-label" for="student-dob">Date of birth</label>
-          <input class="form-control" id="student-dob" type="date" name="date_of_birth" value="{{ student.date_of_birth if student and student.date_of_birth else '' }}" />
+          <input class="form-control" id="student-dob" type="date" name="date_of_birth" value="{% if date_of_birth_value is defined %}{{ date_of_birth_value }}{% elif student and student.date_of_birth %}{{ student.date_of_birth.strftime('%Y-%m-%d') }}{% endif %}" />
+          <div class="form-text">Must be older than 4 years if provided.</div>
         </div>
         <div class="col-6 col-md-3">
           <label class="form-label" for="student-enroll">Enrollment date</label>

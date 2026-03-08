@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0d6efd" />
+    <meta name="theme-color" content="#121110" />
     <title>{% block title %}School System{% endblock %}</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -16,87 +16,62 @@
       rel="stylesheet"
       crossorigin="anonymous"
     />
-    <style>
-      :root {
-        --nav-height: 56px;
-        --transition-fast: 0.15s ease;
-        --shadow-sm: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
-        --shadow-md: 0 0.5rem 1rem rgba(0,0,0,0.1);
-        --shadow-hover: 0 0.75rem 1.5rem rgba(0,0,0,0.12);
-      }
-      html { scroll-behavior: smooth; }
-      body { min-height: 100vh; padding-top: var(--nav-height); }
-      .navbar {
-        box-shadow: var(--shadow-sm);
-        transition: box-shadow var(--transition-fast);
-      }
-      .navbar-brand {
-        font-weight: 700;
-        letter-spacing: -0.02em;
-      }
-      .nav-link {
-        border-radius: 0.375rem;
-        padding: 0.4rem 0.75rem !important;
-        transition: background-color var(--transition-fast), color var(--transition-fast);
-      }
-      .nav-link:hover { background-color: rgba(13, 110, 253, 0.08); }
-      .nav-link.active {
-        background-color: rgba(13, 110, 253, 0.12);
-        color: var(--bs-primary) !important;
-        font-weight: 600;
-      }
-      .btn { transition: transform var(--transition-fast), box-shadow var(--transition-fast); }
-      .btn:hover { transform: translateY(-1px); }
-      .btn:active { transform: translateY(0); }
-      .card {
-        border: none;
-        box-shadow: var(--shadow-sm);
-        transition: box-shadow var(--transition-fast), transform var(--transition-fast);
-      }
-      .card:hover { box-shadow: var(--shadow-md); }
-      .card.interactive:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
-      .table tbody tr { transition: background-color var(--transition-fast); }
-      .table-hover tbody tr:hover { background-color: rgba(13, 110, 253, 0.04); }
-      .form-control:focus, .form-select:focus {
-        border-color: var(--bs-primary);
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.2);
-      }
-      .toast-container { z-index: 1090; }
-      .toast { border: none; box-shadow: var(--shadow-md); }
-      @media (max-width: 991.98px) {
-        .navbar-collapse { padding: 0.5rem 0; }
-        .page-header-wrap { flex-direction: column; align-items: stretch !important; gap: 1rem; }
-        .page-header-wrap .btn { width: 100%; }
-      }
-      @media (max-width: 575.98px) {
-        main.container { padding-left: 0.75rem; padding-right: 0.75rem; }
-      }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}" />
     {% block extra_css %}{% endblock %}
   </head>
-  <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
+  <body>
+    <nav
+      class="navbar navbar-expand-lg navbar-dark border-bottom fixed-top"
+    >
       <div class="container">
         <a class="navbar-brand d-flex align-items-center gap-2" href="/">
           <i class="bi bi-mortarboard-fill text-primary"></i>
           <span>School System</span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarMain"
+          aria-controls="navbarMain"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarMain">
           <ul class="navbar-nav ms-auto gap-1">
             <li class="nav-item">
-              <a class="nav-link {{ 'active' if request.endpoint == 'home' else '' }}" href="/"><i class="bi bi-house-door me-1"></i> Home</a>
+              <a
+                class="nav-link {{ 'active' if request.endpoint == 'home' else '' }}"
+                href="/"
+                ><i class="bi bi-house-door me-1"></i> Home</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link {{ 'active' if request.endpoint and request.endpoint.startswith('teachers') else '' }}" href="/teachers"><i class="bi bi-person-badge me-1"></i> Teachers</a>
+              <a
+                class="nav-link {{ 'active' if request.endpoint and request.endpoint.startswith('teachers') else '' }}"
+                href="/teachers"
+                ><i class="bi bi-person-badge me-1"></i> Teachers</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link {{ 'active' if request.endpoint and request.endpoint.startswith('classes') else '' }}" href="/classes"><i class="bi bi-journal-text me-1"></i> Classes</a>
+              <a
+                class="nav-link {{ 'active' if request.endpoint and request.endpoint.startswith('classes') else '' }}"
+                href="/classes"
+                ><i class="bi bi-journal-text me-1"></i> Classes</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link {{ 'active' if request.endpoint and request.endpoint.startswith('students') else '' }}" href="/students"><i class="bi bi-people me-1"></i> Students</a>
+              <a
+                class="nav-link {{ 'active' if request.endpoint and request.endpoint.startswith('students') else '' }}"
+                href="/students"
+                ><i class="bi bi-people me-1"></i> Students</a
+              >
             </li>
           </ul>
         </div>
@@ -104,62 +79,105 @@
     </nav>
 
     <main class="container py-4">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-      <div class="toast-container position-fixed top-0 end-0 p-3 mt-2" style="margin-top: calc(var(--nav-height) + 0.5rem) !important;">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <div
+        class="toast-container position-fixed top-0 end-0 p-3 mt-2"
+        style="margin-top: calc(var(--nav-height) + 0.5rem) !important"
+      >
         {% for category, message in messages %}
-        <div class="toast show align-items-center text-bg-{{ 'danger' if category == 'error' else category }} border-0" role="alert">
+        <div
+          class="toast show align-items-center text-bg-{{ 'danger' if category == 'error' else category }} border-0"
+          role="alert"
+        >
           <div class="d-flex">
             <div class="toast-body">
-              <i class="bi bi-{{ 'check-circle-fill' if category == 'success' else 'exclamation-triangle-fill' if category == 'error' else 'info-circle-fill' }} me-2"></i>{{ message }}
+              <i
+                class="bi bi-{{ 'check-circle-fill' if category == 'success' else 'exclamation-triangle-fill' if category == 'error' else 'info-circle-fill' }} me-2"
+              ></i
+              >{{ message }}
             </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close btn-close-white me-2 m-auto"
+              data-bs-dismiss="toast"
+              aria-label="Close"
+            ></button>
           </div>
         </div>
         {% endfor %}
       </div>
-      {% endif %}
-      {% endwith %}
-
-      {% block content %}{% endblock %}
+      {% endif %} {% endwith %} {% block content %}{% endblock %}
     </main>
 
     <!-- Delete confirmation modal (shared) -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="deleteModal"
+      tabindex="-1"
+      aria-labelledby="deleteModalLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
           <div class="modal-header border-0 pb-0">
-            <h5 class="modal-title" id="deleteModalLabel"><i class="bi bi-exclamation-triangle text-warning me-2"></i>Confirm delete</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h5 class="modal-title" id="deleteModalLabel">
+              <i class="bi bi-exclamation-triangle text-warning me-2"></i
+              >Confirm delete
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body pt-0">
-            <p class="mb-0" id="deleteModalMessage">Are you sure you want to delete this item? This action cannot be undone.</p>
+            <p class="mb-0" id="deleteModalMessage">
+              Are you sure you want to delete this item? This action cannot be
+              undone.
+            </p>
           </div>
           <div class="modal-footer border-0">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
             <form id="deleteModalForm" method="post" class="d-inline">
-              <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i> Delete</button>
+              <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash me-1"></i> Delete
+              </button>
             </form>
           </div>
         </div>
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
     <script>
-      (function() {
-        var deleteModal = document.getElementById('deleteModal');
+      (function () {
+        var deleteModal = document.getElementById("deleteModal");
         if (deleteModal) {
-          deleteModal.addEventListener('show.bs.modal', function(e) {
+          deleteModal.addEventListener("show.bs.modal", function (e) {
             var btn = e.relatedTarget;
             if (btn && btn.dataset.deleteUrl) {
-              document.getElementById('deleteModalForm').action = btn.dataset.deleteUrl;
-              document.getElementById('deleteModalMessage').textContent = btn.dataset.deleteMessage || 'Are you sure you want to delete this? This action cannot be undone.';
+              document.getElementById("deleteModalForm").action =
+                btn.dataset.deleteUrl;
+              document.getElementById("deleteModalMessage").textContent =
+                btn.dataset.deleteMessage ||
+                "Are you sure you want to delete this? This action cannot be undone.";
             }
           });
         }
-        setTimeout(function() {
-          document.querySelectorAll('.toast').forEach(function(t) {
+        setTimeout(function () {
+          document.querySelectorAll(".toast").forEach(function (t) {
             var toast = new bootstrap.Toast(t, { delay: 5000 });
             toast.show();
           });

@@ -1,0 +1,44 @@
+.btn {
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.card {
+  border: none;
+  box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.card.interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.table tbody tr {
+  transition: background-color var(--transition-fast);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(13, 110, 253, 0.04);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.2);
+}

@@ -13,6 +13,48 @@
   </div>
 </div>
 
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body d-flex align-items-center">
+        <span class="rounded-3 bg-primary bg-opacity-10 p-3 me-3">
+          <i class="bi bi-person-badge text-primary fs-3"></i>
+        </span>
+        <div>
+          <div class="h4 mb-0 fw-bold">{{ teacher_count|default(0) }}</div>
+          <div class="text-muted small">Teachers</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body d-flex align-items-center">
+        <span class="rounded-3 bg-success bg-opacity-10 p-3 me-3">
+          <i class="bi bi-journal-text text-success fs-3"></i>
+        </span>
+        <div>
+          <div class="h4 mb-0 fw-bold">{{ class_count|default(0) }}</div>
+          <div class="text-muted small">Classes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body d-flex align-items-center">
+        <span class="rounded-3 bg-info bg-opacity-10 p-3 me-3">
+          <i class="bi bi-people text-info fs-3"></i>
+        </span>
+        <div>
+          <div class="h4 mb-0 fw-bold">{{ student_count|default(0) }}</div>
+          <div class="text-muted small">Students</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="row g-4 mb-4">
   <div class="col-sm-6 col-lg-4">
     <a href="/teachers" class="text-decoration-none text-dark">

@@ -14,6 +14,7 @@ class Teacher(db.Model):
     last_name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
     phone = db.Column(db.String(30), nullable=True)
+    date_of_birth = db.Column(db.Date, nullable=True)
     hire_date = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
@@ -24,12 +25,16 @@ class Teacher(db.Model):
         return f"{self.first_name} {self.last_name}".strip()
 
 
+CLASS_CAPACITY = 20  # Max students per class
+
+
 class Class(db.Model):
     __tablename__ = "classes"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     grade_level = db.Column(db.String(20), nullable=True)
+    capacity = db.Column(db.Integer, nullable=False, default=CLASS_CAPACITY, server_default=db.text("20"))
     room = db.Column(db.String(20), nullable=True)
     school_year = db.Column(db.String(20), nullable=True)  # e.g. "2025/2026"
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from flask import Flask, flash, redirect, render_template, request, url_for
 from sqlalchemy.exc import OperationalError
 
-from database import Class, Student, Teacher, db, init_app
+from database import CLASS_CAPACITY, Class, Student, Teacher, db, init_app
+from validation import DOBValidationError, validate_dob
 
 # Load .env from project root so USE_SQLITE and DATABASE_URL are always from this file
 _env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
@@ -24,16 +25,25 @@ def handle_db_error(e):
 
 
 def _parse_date(value: str):
-    if not value:
+    if not value or not str(value).strip():
         return None
+    s = str(value).strip()
     try:
-        return datetime.strptime(value, "%Y-%m-%d").date()
+        return datetime.strptime(s, "%Y-%m-%d").date()
     except ValueError:
         return None
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    teacher_count = Teacher.query.count()
+    class_count = Class.query.count()
+    student_count = Student.query.count()
+    return render_template(
+        "index.html",
+        teacher_count=teacher_count,
+        class_count=class_count,
+        student_count=student_count,
+    )
 
 @app.route("/health")
 def health():
@@ -59,11 +69,39 @@ def teachers_list():
 @app.route("/teachers/new", methods=["GET", "POST"])
 def teachers_create():
     if request.method == "POST":
+        dob_raw = request.form.get("date_of_birth", "").strip()
+        if not dob_raw:
+            flash("Date of birth is required. Teacher must be older than 18 years.", "error")
+            teacher = Teacher(
+                first_name=request.form.get("first_name", "").strip(),
+                last_name=request.form.get("last_name", "").strip(),
+                email=request.form.get("email", "").strip(),
+                phone=request.form.get("phone", "").strip() or None,
+                hire_date=_parse_date(request.form.get("hire_date", "").strip()),
+            )
+            return render_template("teachers/form.html", teacher=teacher, mode="create")
+        try:
+            validate_dob(dob_raw, min_age=18)
+        except DOBValidationError as e:
+            flash(str(e.message), "error")
+            teacher = Teacher(
+                first_name=request.form.get("first_name", "").strip(),
+                last_name=request.form.get("last_name", "").strip(),
+                email=request.form.get("email", "").strip(),
+                phone=request.form.get("phone", "").strip() or None,
+                date_of_birth=None,
+                hire_date=_parse_date(request.form.get("hire_date", "").strip()),
+            )
+            return render_template(
+                "teachers/form.html", teacher=teacher, mode="create",
+                date_of_birth_value=dob_raw,
+            )
         teacher = Teacher(
             first_name=request.form.get("first_name", "").strip(),
             last_name=request.form.get("last_name", "").strip(),
             email=request.form.get("email", "").strip(),
             phone=request.form.get("phone", "").strip() or None,
+            date_of_birth=_parse_date(dob_raw),
             hire_date=_parse_date(request.form.get("hire_date", "").strip()),
         )
         if not teacher.first_name or not teacher.last_name or not teacher.email:
@@ -86,10 +124,33 @@ def teachers_create():
 def teachers_edit(teacher_id: int):
     teacher = Teacher.query.get_or_404(teacher_id)
     if request.method == "POST":
+        dob_raw = request.form.get("date_of_birth", "").strip()
+        if not dob_raw:
+            flash("Date of birth is required. Teacher must be older than 18 years.", "error")
+            teacher.first_name = request.form.get("first_name", "").strip()
+            teacher.last_name = request.form.get("last_name", "").strip()
+            teacher.email = request.form.get("email", "").strip()
+            teacher.phone = request.form.get("phone", "").strip() or None
+            teacher.hire_date = _parse_date(request.form.get("hire_date", "").strip())
+            return render_template("teachers/form.html", teacher=teacher, mode="edit")
+        try:
+            validate_dob(dob_raw, min_age=18)
+        except DOBValidationError as e:
+            flash(str(e.message), "error")
+            teacher.first_name = request.form.get("first_name", "").strip()
+            teacher.last_name = request.form.get("last_name", "").strip()
+            teacher.email = request.form.get("email", "").strip()
+            teacher.phone = request.form.get("phone", "").strip() or None
+            teacher.hire_date = _parse_date(request.form.get("hire_date", "").strip())
+            return render_template(
+                "teachers/form.html", teacher=teacher, mode="edit",
+                date_of_birth_value=dob_raw,
+            )
         teacher.first_name = request.form.get("first_name", "").strip()
         teacher.last_name = request.form.get("last_name", "").strip()
         teacher.email = request.form.get("email", "").strip()
         teacher.phone = request.form.get("phone", "").strip() or None
+        teacher.date_of_birth = _parse_date(dob_raw)
         teacher.hire_date = _parse_date(request.form.get("hire_date", "").strip())
         if not teacher.first_name or not teacher.last_name or not teacher.email:
             flash("First name, last name, and email are required.", "error")
@@ -190,12 +251,49 @@ def students_list():
 def students_create():
     classes = Class.query.order_by(Class.name.asc()).all()
     if request.method == "POST":
+        dob_raw = request.form.get("date_of_birth", "").strip()
+        if dob_raw:
+            try:
+                validate_dob(dob_raw, min_age=4)
+            except DOBValidationError as e:
+                flash(str(e.message), "error")
+                cid = request.form.get("class_id")
+                student = Student(
+                    first_name=request.form.get("first_name", "").strip(),
+                    last_name=request.form.get("last_name", "").strip(),
+                    email=request.form.get("email", "").strip() or None,
+                    date_of_birth=None,
+                    enrollment_date=_parse_date(request.form.get("enrollment_date", "").strip()),
+                    class_id=int(cid) if cid else None,
+                )
+                return render_template(
+                    "students/form.html", student=student, mode="create", classes=classes,
+                    date_of_birth_value=dob_raw,
+                )
         class_id = request.form.get("class_id") or None
+        if class_id:
+            cls = Class.query.get(int(class_id))
+            if cls:
+                cap = getattr(cls, "capacity", CLASS_CAPACITY)
+                if len(cls.students) >= cap:
+                    flash(
+                        f"Class {cls.name} is full (capacity: {cap} students). Choose another class or leave unassigned.",
+                        "error",
+                    )
+                    student = Student(
+                        first_name=request.form.get("first_name", "").strip(),
+                        last_name=request.form.get("last_name", "").strip(),
+                        email=request.form.get("email", "").strip() or None,
+                        date_of_birth=_parse_date(dob_raw),
+                        enrollment_date=_parse_date(request.form.get("enrollment_date", "").strip()),
+                        class_id=int(class_id),
+                    )
+                    return render_template("students/form.html", student=student, mode="create", classes=classes)
         student = Student(
             first_name=request.form.get("first_name", "").strip(),
             last_name=request.form.get("last_name", "").strip(),
             email=request.form.get("email", "").strip() or None,
-            date_of_birth=_parse_date(request.form.get("date_of_birth", "").strip()),
+            date_of_birth=_parse_date(dob_raw),
             enrollment_date=_parse_date(request.form.get("enrollment_date", "").strip()),
             class_id=int(class_id) if class_id else None,
         )
@@ -220,11 +318,44 @@ def students_edit(student_id: int):
     student = Student.query.get_or_404(student_id)
     classes = Class.query.order_by(Class.name.asc()).all()
     if request.method == "POST":
+        dob_raw = request.form.get("date_of_birth", "").strip()
+        if dob_raw:
+            try:
+                validate_dob(dob_raw, min_age=4)
+            except DOBValidationError as e:
+                flash(str(e.message), "error")
+                student.first_name = request.form.get("first_name", "").strip()
+                student.last_name = request.form.get("last_name", "").strip()
+                student.email = request.form.get("email", "").strip() or None
+                student.date_of_birth = None
+                student.enrollment_date = _parse_date(request.form.get("enrollment_date", "").strip())
+                cid = request.form.get("class_id")
+                student.class_id = int(cid) if cid else None
+                return render_template(
+                    "students/form.html", student=student, mode="edit", classes=classes,
+                    date_of_birth_value=dob_raw,
+                )
         class_id = request.form.get("class_id") or None
+        if class_id:
+            cls = Class.query.get(int(class_id))
+            if cls and (student.class_id != int(class_id)):
+                cap = getattr(cls, "capacity", CLASS_CAPACITY)
+                if len(cls.students) >= cap:
+                    flash(
+                        f"Class {cls.name} is full (capacity: {cap} students). Choose another class or leave unassigned.",
+                        "error",
+                    )
+                    student.first_name = request.form.get("first_name", "").strip()
+                    student.last_name = request.form.get("last_name", "").strip()
+                    student.email = request.form.get("email", "").strip() or None
+                    student.date_of_birth = _parse_date(dob_raw)
+                    student.enrollment_date = _parse_date(request.form.get("enrollment_date", "").strip())
+                    student.class_id = int(class_id)
+                    return render_template("students/form.html", student=student, mode="edit", classes=classes)
         student.first_name = request.form.get("first_name", "").strip()
         student.last_name = request.form.get("last_name", "").strip()
         student.email = request.form.get("email", "").strip() or None
-        student.date_of_birth = _parse_date(request.form.get("date_of_birth", "").strip())
+        student.date_of_birth = _parse_date(dob_raw)
         student.enrollment_date = _parse_date(request.form.get("enrollment_date", "").strip())
         student.class_id = int(class_id) if class_id else None
         if not student.first_name or not student.last_name:
